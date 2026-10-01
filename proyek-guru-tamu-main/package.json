@@ -1,0 +1,37 @@
+{
+  "name": "sistem-sarpras-lab-rpl",
+  "version": "1.0.0",
+  "description": "Sistem Peminjaman Sarpras Lab RPL & Elektronika - Standar UKK / Industri",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio",
+    "seed": "node prisma/seed.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "ejs",
+    "prisma",
+    "sqlite",
+    "smk-telkom-lampung",
+    "pjbl"
+  ],
+  "author": "Muhammad Fari Madyan, S.Kom (Lampung Dev)",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^6.4.1",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.19.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "prisma": "^6.4.1"
+  }
+}

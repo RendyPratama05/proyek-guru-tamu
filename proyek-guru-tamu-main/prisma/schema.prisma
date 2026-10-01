@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Model Pengguna Sistem Lab (RBAC 3 Level: ADMIN, TOOLMAN, PEMINJAM)
+model User {
+  id                Int           @id @default(autoincrement())
+  username          String        @unique
+  password          String
+  nama              String
+  role              String        @default("PEMINJAM") // ADMIN, TOOLMAN, PEMINJAM
+  nisn              String?
+  telepon           String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  borrowings        Borrowing[]   @relation("BorrowerUser")
+  handledBorrowings Borrowing[]   @relation("ToolmanUser")
+  activityLogs      ActivityLog[]
+}
+
+// 2. Model Kategori Alat Lab (Jaringan, Elektronika, Proyektor, Tools)
+model Category {
+  id           Int      @id @default(autoincrement())
+  namaKategori String
+  createdAt    DateTime @default(now())
+  tools        Tool[]
+}
+
+// 3. Model Inventaris Alat Praktikum Lab
+model Tool {
+  id          Int         @id @default(autoincrement())
+  namaAlat    String
+  spesifikasi String
+  stok        Int         @default(0)
+  kondisi     String      @default("BAIK") // BAIK, RUSAK
+  categoryId  Int
+  category    Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  borrowings  Borrowing[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// 4. Model Transaksi Peminjaman & Pengembalian Alat
+model Borrowing {
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  user              User      @relation("BorrowerUser", fields: [userId], references: [id], onDelete: Cascade)
+  toolId            Int
+  tool              Tool      @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  jumlah            Int       @default(1)
+  tglPinjam         DateTime  @default(now())
+  tglKembaliRencana DateTime
+  tglKembaliReal    DateTime?
+  status            String    @default("PENDING") // PENDING, APPROVED, REJECTED, RETURNED
+  kondisiKembali    String?   // BAIK, RUSAK, HILANG
+  denda             Int       @default(0)
+  toolmanId         Int?
+  toolman           User?     @relation("ToolmanUser", fields: [toolmanId], references: [id], onDelete: SetNull)
+  catatan           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+// 5. Model Rekam Jejak Audit Log Sirkulasi Sarpras
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  aksi       String
+  keterangan String
+  createdAt  DateTime @default(now())
+}
